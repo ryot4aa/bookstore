@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Riwayat Transaksi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .card {
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgb(124 58 237 / 0.4), 0 4px 6px -2px rgb(14 165 233 / 0.3);
+            background: white;
+        }
+        .btn {
+            border-radius: 0.75rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-6 flex flex-col items-center">
+
+<div class="w-full max-w-6xl card p-8 mt-12">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-purple-800 flex items-center gap-2">
+            <i data-lucide="list" class="w-7 h-7"></i> Riwayat Transaksi
+        </h1>
+        <div class="flex items-center gap-4 text-purple-700">
+            <i data-lucide="user" class="w-5 h-5"></i>
+            <span>
+                Halo, <span th:text="${loggedInUser.username}" class="font-semibold"></span>
+                (<span th:text="${userRole}" class="capitalize"></span>)
+            </span>
+            <a th:href="@{/books}"
+               class="btn bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 flex items-center gap-2 transition">
+                <i data-lucide="book" class="w-4 h-4"></i> Daftar Buku
+            </a>
+            <a th:href="@{/logout}"
+               class="btn bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 flex items-center gap-2 transition">
+                <i data-lucide="log-out" class="w-4 h-4"></i> Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- Jika kosong -->
+    <div th:if="${#lists.isEmpty(transactions)}" class="text-center text-gray-600 py-12 text-lg">
+        <p>Belum ada riwayat transaksi.</p>
+    </div>
+
+    <!-- Tabel transaksi -->
+    <div th:unless="${#lists.isEmpty(transactions)}" class="overflow-x-auto rounded-lg shadow mt-4">
+        <table class="min-w-full bg-white">
+            <thead class="bg-purple-100 text-purple-700 uppercase text-sm font-semibold">
+                <tr>
+                    <th class="text-left px-6 py-4">ID Transaksi</th>
+                    <th class="text-left px-6 py-4">Judul Buku</th>
+                    <th class="text-left px-6 py-4">Jumlah</th>
+                    <th class="text-left px-6 py-4">Total Harga</th>
+                    <th class="text-left px-6 py-4">Tanggal</th>
+                    <th class="text-left px-6 py-4">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-800 text-sm divide-y divide-gray-200">
+                <tr th:each="transaction : ${transactions}" class="hover:bg-purple-50 transition">
+                    <td class="px-6 py-4" th:text="${transaction.transactionId}"></td>
+                    <td class="px-6 py-4" th:text="${transaction.book.title}"></td>
+                    <td class="px-6 py-4" th:text="${transaction.quantity}"></td>
+                    <td class="px-6 py-4" th:text="${#numbers.formatCurrency(transaction.totalPrice)}"></td>
+                    <td class="px-6 py-4" th:text="${#temporals.format(transaction.transactionDate, 'dd-MM-yyyy HH:mm')}"></td>
+                    <td class="px-6 py-4">
+                        <a th:href="@{/transactions/receipt/{id}(id=${transaction.transactionId})}" target="_blank"
+                           class="btn bg-green-600 hover:bg-green-700 text-white font-semibold py-1.5 px-3 flex items-center gap-1 text-sm transition">
+                            <i data-lucide="printer" class="w-4 h-4"></i> Print
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    lucide.createIcons();
+</script>
+
+</body>
+</html>

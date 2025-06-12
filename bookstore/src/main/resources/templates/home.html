@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Literasi.in</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* very light cyan-ish */
+            color: #334155; /* dark slate blue-gray */
+        }
+        /* Optional: Custom styles for dot indicators */
+        .dot.active {
+            background-color: #8B5CF6; /* purple-500 */
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <div th:replace="fragments/navbar :: nav"></div>
+
+    <main class="container mx-auto p-6 mt-8">
+        <!-- Card removed as requested -->
+
+        <div class="relative w-full mx-auto overflow-hidden rounded-lg shadow-xl"
+            style="max-width: 2000px; height: 480px; margin-top: 0;">
+
+            <div id="image-carousel" class="flex transition-transform duration-500 ease-in-out h-full">
+                <div class="w-full flex-shrink-0 h-full">
+                    <img th:src="@{/images/iklan.jpg}" alt="Promo Banner 1" class="w-full h-full object-cover">
+                </div>
+                <div class="w-full flex-shrink-0 h-full">
+                    <img th:src="@{/images/iklan2.jpg}" alt="Promo Banner 2" class="w-full h-full object-cover">
+                </div>
+                <div class="w-full flex-shrink-0 h-full">
+                    <img th:src="@{/images/iklan3.jpg}" alt="Promo Banner 3" class="w-full h-full object-cover">
+                </div>
+                </div>
+
+            <button id="prev-slide" class="absolute top-1/2 left-4 -translate-y-1/2 bg-gray-800 bg-opacity-50 p-2 rounded-full text-white hover:bg-opacity-75 transition z-10">
+                <i data-lucide="chevron-left" class="w-6 h-6"></i>
+            </button>
+            <button id="next-slide" class="absolute top-1/2 right-4 -translate-y-1/2 bg-gray-800 bg-opacity-50 p-2 rounded-full text-white hover:bg-opacity-75 transition z-10">
+                <i data-lucide="chevron-right" class="w-6 h-6"></i>
+            </button>
+
+            <div id="dot-indicators" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
+                </div>
+        </div>
+
+        <div class="text-center mt-12"> <a th:href="@{/books}"
+            class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
+                <i data-lucide="book-open"></i> Lihat Semua Buku
+            </a>
+        </div>
+    </main>
+
+    <div th:replace="fragments/footer :: footer"></div>
+    <script>
+        lucide.createIcons(); // Inisialisasi ikon Lucide
+
+        const carousel = document.getElementById('image-carousel');
+        const slides = carousel.children;
+        const totalSlides = slides.length;
+        let currentSlide = 0;
+
+        const dotIndicators = document.getElementById('dot-indicators');
+        const prevButton = document.getElementById('prev-slide');
+        const nextButton = document.getElementById('next-slide');
+
+        // Function to update carousel display
+        function updateCarousel() {
+            carousel.style.transform = `translateX(-${currentSlide * 100}%)`;
+            updateDots();
+        }
+
+        // Function to update dot indicators
+        function updateDots() {
+            dotIndicators.innerHTML = ''; // Clear existing dots
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('button');
+                dot.classList.add('dot', 'w-3', 'h-3', 'bg-gray-400', 'rounded-full', 'cursor-pointer', 'transition-colors', 'duration-300');
+                if (i === currentSlide) {
+                    dot.classList.add('active'); // Add active class for current slide's dot
+                }
+                dot.addEventListener('click', () => {
+                    currentSlide = i;
+                    updateCarousel();
+                });
+                dotIndicators.appendChild(dot);
+            }
+        }
+
+        // Event Listeners for Prev/Next Buttons
+        if (prevButton) {
+            prevButton.addEventListener('click', () => {
+                currentSlide = (currentSlide - 1 + totalSlides) % totalSlides; // Loop back to end
+                updateCarousel();
+            });
+        }
+
+        if (nextButton) {
+            nextButton.addEventListener('click', () => {
+                currentSlide = (currentSlide + 1) % totalSlides; // Loop to beginning
+                updateCarousel();
+            });
+        }
+
+        // Auto-slide functionality (Optional)
+        const autoSlideInterval = 5000; // 5 seconds
+        let slideTimer;
+
+        function startAutoSlide() {
+            slideTimer = setInterval(() => {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                updateCarousel();
+            }, autoSlideInterval);
+        }
+
+        function stopAutoSlide() {
+            clearInterval(slideTimer);
+        }
+
+        // Stop auto-slide on hover, resume on mouse leave
+        const carouselContainer = document.querySelector('.relative.w-full.mx-auto.overflow-hidden');
+        if (carouselContainer) {
+            carouselContainer.addEventListener('mouseenter', stopAutoSlide);
+            carouselContainer.addEventListener('mouseleave', startAutoSlide);
+        }
+
+        // Initialize carousel on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCarousel();
+            startAutoSlide(); // Start auto-slide when page loads
+            
+        });
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="|Struk Pembelian #${transaction.transactionId}|">Struk Pembelian</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            margin: 20px;
+            color: #333;
+        }
+        .receipt-container {
+            width: 300px; /* Typical receipt width */
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            background-color: #fff;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 20px;
+            color: #000;
+        }
+        .header, .footer {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .details p {
+            margin: 5px 0;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .items-table th, .items-table td {
+            border-top: 1px dashed #ccc;
+            padding: 8px 0;
+            text-align: left;
+        }
+        .items-table th {
+            text-align: center;
+            font-weight: bold;
+        }
+        .items-table td:nth-child(2) {
+            text-align: right;
+        }
+        .items-table td:nth-child(3) {
+            text-align: right;
+        }
+        .total-section {
+            border-top: 1px dashed #ccc;
+            padding-top: 10px;
+            margin-top: 15px;
+            text-align: right;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        @media print {
+            body {
+                margin: 0;
+            }
+            .receipt-container {
+                width: auto;
+                border: none;
+                box-shadow: none;
+                margin: 0;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt-container">
+        <h2>STRUK PEMBELIAN</h2>
+        <div class="header">
+            <p>Toko Buku Literasi.in</p>
+            <p>Jl. Dunia No. 123, Bandung</p>
+            <p>Telp: (022) 1234567</p>
+            <p>---------------------------------</p>
+        </div>
+
+        <div class="details">
+            <p><strong>ID Transaksi:</strong> <span th:text="${transaction.transactionId}"></span></p>
+            <p><strong>Tanggal:</strong> <span th:text="${#temporals.format(transaction.transactionDate, 'dd-MM-yyyy HH:mm:ss')}"></span></p>
+            <p><strong>Pembeli:</strong> <span th:text="${loggedInUser.username}"></span></p>
+            <p>---------------------------------</p>
+        </div>
+
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Deskripsi</th>
+                    <th>Qty</th>
+                    <th>Harga</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Untuk struk ini, karena transaction hanya menyimpan 1 buku, kita tampilkan detail buku langsung -->
+                <tr>
+                    <td th:text="${transaction.book.title}">Nama Buku</td>
+                    <td th:text="${transaction.quantity}">1</td>
+                    <td th:text="${#numbers.formatCurrency(transaction.book.price)}">Rp. 0.00</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="total-section">
+            <p>Total: <span th:text="${#numbers.formatCurrency(transaction.totalPrice)}"></span></p>
+        </div>
+
+        <div class="footer">
+            <p>---------------------------------</p>
+            <p>Terima Kasih Atas Kunjungan Anda!</p>
+        </div>
+    </div>
+
+    <script>
+        // Trigger print dialog automatically when the page loads
+        window.onload = function() {
+            window.print();
+        };
+    </script>
+</body>
+</html>

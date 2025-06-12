@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navbar Fragment</title>
+    </head>
+<body>
+
+<nav th:fragment="nav" class="bg-purple-700 shadow-lg px-6 py-4 flex flex-wrap items-center justify-between text-white">
+    <div class="flex items-center space-x-3">
+        <i data-lucide="book-open" class="w-6 h-6 text-white"></i>
+        <h1 class="text-xl font-bold">Literasi.in</h1>
+    </div>
+
+    <div th:if="${userRole != 'admin'}" class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm mx-auto justify-center mt-4 sm:mt-0">
+        <a th:href="@{/}"
+           class="px-4 py-1 rounded-lg hover:bg-purple-600 transition font-semibold text-center">
+            Home
+        </a>
+        <a th:href="@{/about}"
+           class="px-4 py-1 rounded-lg hover:bg-purple-600 transition font-semibold text-center">
+            About
+        </a>
+        <a th:href="@{/books}"
+           class="px-4 py-1 rounded-lg hover:bg-purple-600 transition font-semibold text-center">
+            Shop
+        </a>
+    </div>
+
+    <div th:if="${userRole == 'admin'}" class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm mx-auto justify-center mt-4 sm:mt-0">
+        <a th:href="@{/books}"
+           class="px-4 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 transition font-semibold text-center">
+            Manajemen Buku
+        </a>
+    </div>
+
+    <div class="relative group ml-auto">
+        <button type="button" class="flex items-center gap-2 px-3 py-1 rounded-lg bg-purple-300 hover:bg-purple-400 text-purple-900 font-semibold transition focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
+            <i data-lucide="user-circle" class="w-5 h-5 text-purple-900"></i>
+            <span class="hidden sm:inline" th:text="${loggedInUser?.username ?: 'Guest'}">Guest</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 ml-1 transition-transform group-hover:rotate-180"></i>
+        </button>
+
+        <div class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-in-out z-50">
+            <div class="block sm:hidden px-4 py-2 text-sm text-gray-700 font-semibold border-b border-gray-200"
+                 th:if="${loggedInUser != null}">
+                <span th:text="${loggedInUser?.username ?: 'Guest'}">Guest</span> (<span th:text="${userRole ?: 'N/A'}"></span>)
+            </div>
+
+            <a th:href="@{/profile}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <i data-lucide="user" class="inline-block w-4 h-4 mr-2"></i> Profil
+            </a>
+
+            <a th:if="${userRole != null and userRole == 'user'}" th:href="@{/transactions/history}"
+               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <i data-lucide="history" class="inline-block w-4 h-4 mr-2"></i> Riwayat Transaksi
+            </a>
+            <a th:if="${userRole != null and userRole == 'admin'}" th:href="@{/admin/transactions/all}"
+               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <i data-lucide="clipboard-list" class="inline-block w-4 h-4 mr-2"></i> Semua Transaksi
+            </a>
+            <a th:href="@{/admin/books/add}" th:if="${userRole != null and userRole == 'admin'}"
+               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <i data-lucide="plus" class="inline-block w-4 h-4 mr-2"></i> Tambah Buku
+            </a>
+
+            <div class="border-t border-gray-200 my-1"></div>
+            <a th:href="@{/logout}"
+               class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700">
+                <i data-lucide="log-out" class="inline-block w-4 h-4 mr-2"></i> Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Daftar Buku - Cerah Ungu Cyan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* very light cyan-ish */
+            color: #334155; /* dark slate blue-gray */
+        }
+        /* No custom scrollbar needed for grid layout usually */
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+<div th:replace="fragments/navbar :: nav"></div>
+
+<div class="container mx-auto p-6 flex-grow">
+    <div class="mb-6 bg-white border border-cyan-200 text-cyan-900 p-5 rounded-xl shadow-sm">
+        <p class="text-xl font-semibold">HALLO SELAMAT DATANG DI TOKO BUKU Literasi.in, <span th:text="${loggedInUser.username}"></span>!</p>
+        <p class="text-base mt-1 font-medium">
+            <span th:if="${userRole == 'user'}">Selamat berbelanja buku favorit Anda.</span>
+            <span th:if="${userRole == 'admin'}">Selamat bekerja, Admin! Kelola inventaris buku Anda di sini.</span>
+        </p>
+    </div>
+
+    <div th:if="${success}" class="bg-green-100 border border-green-300 text-green-800 p-4 rounded-xl shadow mb-4 flex items-center gap-2">
+        <i data-lucide="check-circle" class="inline w-5 h-5 text-green-600"></i>
+        <span th:text="${success}"></span>
+    </div>
+    <div th:if="${error}" class="bg-red-100 border border-red-300 text-red-800 p-4 rounded-xl shadow mb-4 flex items-center gap-2">
+        <i data-lucide="alert-circle" class="inline w-5 h-5 text-red-600"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <div th:if="${userRole == 'admin'}" class="mb-4 text-right">
+        <a th:href="@{/admin/books/add}"
+           class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow-md transition">
+            <i data-lucide="plus-circle"></i> Tambah Buku Baru
+        </a>
+    </div>
+
+    <form th:action="@{/books/prepare-purchase}" method="post">
+        <div th:if="${#lists.isEmpty(books)}" class="text-center text-gray-500 py-8">
+            <p><i data-lucide="info" class="inline w-5 h-5 mr-1"></i> Belum ada buku yang tersedia.</p>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(books)}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
+            <div th:each="book : ${books}" class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 relative overflow-hidden flex flex-col">
+                <div th:if="${userRole == 'user'}" class="absolute top-2 left-2 z-10">
+                    <input type="checkbox" name="selectedBookIds" th:value="${book.bookId}" class="cursor-pointer form-checkbox h-5 w-5 text-purple-600 rounded-md border-gray-300 focus:ring-purple-500" />
+                </div>
+
+                <div th:if="${userRole == 'admin'}" class="absolute top-2 right-2 z-10">
+                    <div class="relative group">
+                        <button type="button" class="p-1 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition">
+                            <i data-lucide="more-horizontal" class="w-5 h-5"></i>
+                        </button>
+                        <div class="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-in-out z-20">
+                            <a th:href="@{/admin/books/edit/{id}(id=${book.bookId})}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i data-lucide="edit" class="inline-block w-4 h-4 mr-2"></i>Edit
+                            </a>
+                            <a th:href="@{/admin/books/restock/{id}(id=${book.bookId})}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i data-lucide="rotate-ccw" class="inline-block w-4 h-4 mr-2"></i>Restock
+                            </a>
+                            <a th:href="@{/admin/books/delete/{id}(id=${book.bookId})}" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700">
+                                <i data-lucide="trash-2" class="inline-block w-4 h-4 mr-2"></i>Hapus
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="h-60 overflow-hidden rounded-t-lg bg-gray-100 flex items-center justify-center">
+                    <img th:if="${book.imageUrl}" th:src="@{${book.imageUrl}}" th:alt="${book.title}"
+                         class="w-full h-full object-cover" />
+                    <div th:unless="${book.imageUrl}"
+                         class="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                        <i data-lucide="image-off" class="w-12 h-12 text-gray-300"></i>
+                    </div>
+                </div>
+
+                <div class="p-4 flex-grow flex flex-col justify-between">
+                    <div>
+                        <span class="inline-block bg-orange-100 text-orange-600 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2"
+                              th:if="${book.totalSold != null and book.totalSold > 50}">Best Seller</span>
+                        <h3 class="text-base font-semibold text-gray-800 mb-1 leading-tight" th:text="${book.title}">Judul Buku</h3>
+                        <p class="text-sm text-gray-600 mb-2" th:text="${book.author}">Penulis Buku</p>
+                    </div>
+                    <div class="mt-auto"> <p class="text-lg font-bold text-purple-700" th:text="${#numbers.formatCurrency(book.price)}">Rp 123.000</p>
+                        <p class="text-xs text-gray-500" th:text="'Stok: ' + ${book.stock}"></p>
+                        <p th:if="${userRole == 'admin'}" class="text-xs text-gray-500" th:text="'Terjual: ' + ${book.totalSold != null ? book.totalSold : '0'}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${userRole == 'user'}" class="mt-8 text-center">
+            <button type="submit"
+                    id="buySelectedBooksBtn"
+                    class="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-full shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                <i data-lucide="shopping-cart"></i> Beli Buku Terpilih
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    lucide.createIcons();
+
+    // Fitur Select All checkbox - (Tidak berlaku langsung untuk layout grid ini, bisa dihilangkan atau diadaptasi)
+    // const selectAllCheckbox = document.getElementById('selectAll'); // Tidak ada checkbox 'selectAll' di layout grid baru
+    const checkboxes = document.querySelectorAll('input[name="selectedBookIds"]');
+    const buyButton = document.getElementById('buySelectedBooksBtn');
+
+    // Fungsi untuk mengupdate status tombol beli
+    function updateBuyButtonStatus() {
+        let anyCheckboxChecked = false;
+        checkboxes.forEach(cb => {
+            if (cb.checked) {
+                anyCheckboxChecked = true;
+            }
+        });
+        if (buyButton) {
+            buyButton.disabled = !anyCheckboxChecked;
+        }
+    }
+
+    // Panggil saat halaman dimuat
+    updateBuyButtonStatus();
+
+    // Tambahkan event listener ke setiap checkbox
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', updateBuyButtonStatus);
+    });
+
+    // Opsional: Implementasi Select All (jika Anda menambahkan checkbox master di tempat lain)
+    // Jika Anda ingin mengembalikan fitur select all, Anda perlu menambahkan checkbox "selectAll"
+    // di suatu tempat di luar item grid dan mengadaptasi logika ini.
+</script>
+</body>
+</html>

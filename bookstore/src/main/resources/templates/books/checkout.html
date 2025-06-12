@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout Pembelian Buku</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script> 
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #334155;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .card {
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+        .input-field {
+            border-radius: 0.5rem;
+        }
+        .btn {
+            border-radius: 0.75rem;
+        }
+        .error-message {
+            border-radius: 0.5rem;
+        }
+        .item-row {
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+        .item-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4 min-h-screen flex flex-col"> <div class="container mx-auto mt-8 card bg-white p-8">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Checkout Pembelian Buku</h1>
+            <div class="flex items-center space-x-4">
+                <span class="text-gray-700">Halo, <span th:text="${loggedInUser?.username ?: 'Guest'}"></span> (<span th:text="${userRole ?: 'N/A'}"></span>)</span>
+                <a th:href="@{/logout}" class="btn bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4">Logout</a>
+            </div>
+        </div>
+
+        <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 error-message" role="alert">
+            <span class="block sm:inline" th:text="${error}"></span>
+        </div>
+
+        <form th:action="@{/books/complete-purchase}" method="post" class="space-y-6">
+            <div th:if="${#lists.isEmpty(selectedBooks)}" class="text-center text-gray-600 py-8">
+                <p>Tidak ada buku yang dipilih untuk checkout.</p>
+                <a th:href="@{/books}" class="font-medium text-blue-600 hover:text-blue-500 mt-4 inline-block">Kembali ke Daftar Buku</a>
+            </div>
+            <div th:unless="${#lists.isEmpty(selectedBooks)}">
+                <div class="grid grid-cols-5 md:grid-cols-5 gap-4 text-sm font-semibold text-gray-700 uppercase mb-4 pb-2 border-b border-gray-300">
+                    <div class="col-span-1"></div> <div class="col-span-2">Detail Buku</div>
+                    <div class="col-span-1 text-center">Jumlah</div>
+                    <div class="col-span-1 text-right">Subtotal</div>
+                </div>
+
+                <div th:each="book : ${selectedBooks}" class="item-row grid grid-cols-5 md:grid-cols-5 gap-4 items-center">
+                    <div class="col-span-1 flex items-center justify-center">
+                        <img th:if="${book.imageUrl}" th:src="@{${book.imageUrl}}" alt="Gambar Buku"
+                             class="w-20 h-24 object-cover rounded-md shadow-sm" />
+                        <div th:unless="${book.imageUrl}"
+                             class="w-20 h-24 bg-gray-200 flex items-center justify-center text-xs text-gray-500 rounded-md">
+                            <i data-lucide="image-off" class="w-8 h-8 text-gray-400"></i> </div>
+                    </div>
+
+                    <div class="col-span-2">
+                        <h3 class="text-lg font-semibold text-gray-800" th:text="${book.title}"></h3>
+                        <p class="text-gray-600">Oleh: <span th:text="${book.author}"></span></p>
+                        <p class="text-gray-600">Harga per unit: <span class="unit-price" th:text="${#numbers.formatCurrency(book.price)}" th:data-price="${book.price}"></span></p>
+                        <p class="text-gray-600">Stok Tersedia: <span th:text="${book.stock}"></span></p>
+                    </div>
+                    <div class="col-span-1">
+                        <label th:for="|quantity_${book.bookId}|" class="sr-only">Jumlah untuk <span th:text="${book.title}"></span></label>
+                        <input type="number" th:id="|quantity_${book.bookId}|" th:name="|quantity_${book.bookId}|"
+                               min="1" th:max="${book.stock}" value="1" required
+                               oninput="updateSubtotal(this)"
+                               class="input-field w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div class="col-span-1 text-right">
+                        <p class="text-lg font-bold text-gray-800">
+                            <span class="item-subtotal" th:text="${#numbers.formatCurrency(book.price * 1)}"></span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-end space-x-3">
+                    <a th:href="@{/books}" class="btn bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 inline-block">Batal</a>
+                    <button type="submit"
+                            class="btn bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 ease-in-out">
+                        Lanjutkan Pembayaran
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest"></script> 
+    <script>
+        lucide.createIcons(); // Inisialisasi ikon Lucide
+
+        function updateSubtotal(inputElement) {
+            const quantity = parseInt(inputElement.value);
+            const itemRow = inputElement.closest('.item-row');
+            const unitPriceSpan = itemRow.querySelector('.unit-price');
+            // Pastikan unitPriceSpan.dataset.price benar-benar number
+            const unitPrice = parseFloat(unitPriceSpan.dataset.price);
+
+            const subtotal = quantity * unitPrice;
+
+            const subtotalSpan = itemRow.querySelector('.item-subtotal');
+            subtotalSpan.textContent = formatCurrency(subtotal);
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            }).format(amount);
+        }
+
+        // Initialize subtotals on page load (for initial value=1)
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('input[name^="quantity_"]').forEach(input => {
+                updateSubtotal(input);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footer Fragment</title>
+    </head>
+<body>
+
+<footer th:fragment="footer" class="bg-gray-800 text-gray-300 py-10 px-6">
+    <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="col-span-1 md:col-span-1">
+            <div class="flex items-center space-x-2 mb-4">
+                <i data-lucide="book-open" class="w-8 h-8 text-purple-400"></i>
+                <h3 class="text-2xl font-bold text-white">Literasi.in</h3>
+            </div>
+            <p class="text-sm">Literasi.in adalah toko buku online terpercaya Anda. Temukan petualangan baru di setiap halaman.</p>
+            <div class="flex space-x-4 mt-6">
+                <a href="#" class="text-gray-400 hover:text-white transition">
+                    <i data-lucide="facebook" class="w-6 h-6"></i>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-white transition">
+                    <i data-lucide="instagram" class="w-6 h-6"></i>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-white transition">
+                    <i data-lucide="twitter" class="w-6 h-6"></i>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-white transition">
+                    <i data-lucide="linkedin" class="w-6 h-6"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-span-1 md:col-span-1">
+            <h4 class="text-lg font-semibold text-white mb-4">Navigasi</h4>
+            <ul class="space-y-2">
+                <li><a th:href="@{/}" class="text-sm hover:text-white transition">Home</a></li>
+                <li><a th:href="@{/books}" class="text-sm hover:text-white transition">Shop Buku</a></li>
+                <li><a th:href="@{/about}" class="text-sm hover:text-white transition">Tentang Kami</a></li>
+                <li><a th:href="@{/profile}" class="text-sm hover:text-white transition">Profil Saya</a></li>
+                </ul>
+        </div>
+
+        <div class="col-span-1 md:col-span-1">
+            <h4 class="text-lg font-semibold text-white mb-4">Bantuan</h4>
+            <ul class="space-y-2">
+                <li><a href="#" class="text-sm hover:text-white transition">FAQ</a></li>
+                <li><a href="#" class="text-sm hover:text-white transition">Kebijakan Privasi</a></li>
+                <li><a href="#" class="text-sm hover:text-white transition">Syarat & Ketentuan</a></li>
+                <li><a href="#" class="text-sm hover:text-white transition">Pengembalian</a></li>
+            </ul>
+        </div>
+
+        <div class="col-span-1 md:col-span-1">
+            <h4 class="text-lg font-semibold text-white mb-4">Kontak Kami</h4>
+            <ul class="space-y-2 text-sm">
+                <li class="flex items-center space-x-2">
+                    <i data-lucide="map-pin" class="w-5 h-5 text-gray-400"></i>
+                    <span>Jl. Contoh No. 123, Kota Bandung, Indonesia</span>
+                </li>
+                <li class="flex items-center space-x-2">
+                    <i data-lucide="phone" class="w-5 h-5 text-gray-400"></i>
+                    <span>+62 812-3456-7890</span>
+                </li>
+                <li class="flex items-center space-x-2">
+                    <i data-lucide="mail" class="w-5 h-5 text-gray-400"></i>
+                    <span>info@literasi.in</span>
+                </li>
+            </ul>
+            <p class="text-sm mt-4">Jam Operasional: Senin-Jumat, 09:00 - 17:00 WIB</p>
+        </div>
+    </div>
+
+    <hr class="border-gray-700 my-8">
+
+    <div class="text-center text-sm text-gray-500">
+        &copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2025</span> Literasi.in. All rights reserved.
+    </div>
+</footer>
+
+<script>
+    // lucide.createIcons(); // Hanya panggil ini di halaman utama (misal di body HTML utama)
+</script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tentang Kami - Literasi.in</title> <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* very light cyan-ish */
+            color: #334155; /* dark slate blue-gray */
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <div th:replace="fragments/navbar :: nav"></div>
+
+    <main class="container mx-auto p-6 mt-8 flex-grow"> <h2 class="text-3xl font-bold text-gray-800 mb-4">Tentang Kami</h2>
+        <p class="text-lg text-gray-700 mb-4">Literasi.in adalah platform yang didedikasikan untuk menyediakan akses mudah ke berbagai koleksi buku.</p> <p class="text-lg text-gray-700">Misi kami adalah mendorong minat membaca dan mempermudah pencarian buku favorit Anda.</p>
+        <div class="mt-6">
+            <p class="text-md text-gray-600">Kontak kami: info@literasi.in</p> </div>
+    </main>
+    
+    <div th:replace="fragments/footer :: footer"></div>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Beli Buku - Cerah Ungu Cyan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* very light cyan-ish */
+            color: #334155; /* dark slate blue-gray */
+        }
+        .card {
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgb(124 58 237 / 0.4), 0 4px 6px -2px rgb(14 165 233 / 0.3);
+            background: white;
+        }
+        .input-field {
+            border-radius: 0.5rem;
+        }
+        .btn {
+            border-radius: 0.75rem;
+        }
+        .error-message {
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-6 flex flex-col items-center">
+
+<div class="w-full max-w-lg card p-8 mt-12">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-purple-800">
+            Beli Buku: <span th:text="${book.title}"></span>
+        </h1>
+        <div class="flex items-center space-x-4 text-purple-700">
+            <i data-lucide="user" class="w-6 h-6"></i>
+            <span>
+                Halo, <span th:text="${loggedInUser.username}" class="font-semibold"></span>
+                (<span th:text="${userRole}" class="capitalize"></span>)
+            </span>
+            <a th:href="@{/logout}" 
+               class="btn bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 flex items-center gap-1 transition">
+                <i data-lucide="log-out" class="w-5 h-5"></i> Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- Error message -->
+    <div th:if="${error}" 
+         class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg shadow mb-6 error-message flex items-center gap-2"
+         role="alert">
+        <i data-lucide="alert-circle" class="w-5 h-5"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <!-- Book details -->
+    <div class="mb-6 text-purple-900 space-y-1">
+        <p><strong>Penulis:</strong> <span th:text="${book.author}"></span></p>
+        <p><strong>Harga:</strong> <span th:text="${#numbers.formatCurrency(book.price)}"></span></p>
+        <p><strong>Stok Tersedia:</strong> <span th:text="${book.stock}"></span></p>
+    </div>
+
+    <!-- Form pembelian -->
+    <form th:action="@{/books/purchase}" method="post" class="space-y-6">
+        <input type="hidden" name="bookId" th:value="${book.bookId}" />
+        <div>
+            <label for="quantity" class="block mb-2 font-semibold text-purple-700">Jumlah Beli</label>
+            <input
+                type="number"
+                id="quantity"
+                name="quantity"
+                min="1"
+                th:max="${book.stock}"
+                value="1"
+                required
+                class="input-field w-full px-4 py-2 border border-purple-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-300 rounded-md shadow-sm transition"
+            />
+        </div>
+        <div class="flex justify-end space-x-4">
+            <a th:href="@{/books}" 
+               class="btn bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 px-6 rounded-xl shadow transition">
+                Batal
+            </a>
+            <button type="submit" 
+                    class="btn bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-xl shadow transition flex items-center gap-2">
+                <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                Konfirmasi Pembelian
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    lucide.createIcons();
+</script>
+
+</body>
+</html>
